@@ -39,7 +39,7 @@ print(f"Train: {len(train_df)}  Val: {len(val_df)}  Test: {len(test_df)}")
 # Copying files.
 
 SPLITTED_PATH = Path("datasets/splits")
-ALL_IMAGES_PATH = Path("datasets/processed")
+ALL_IMAGES_PATH = Path("datasets/resized")
 
 TRAIN_PATH = SPLITTED_PATH.joinpath("train/")
 VALIDATE_PATH = SPLITTED_PATH.joinpath("validate/")
