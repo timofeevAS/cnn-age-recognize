@@ -51,7 +51,73 @@ APPA-Real Age - содержит 7591 изображение с указание
 Для выбранных датасетов будут выполнены следующие шаги для приведения данных к единому виду:
 \begin{enumerate}
 	\item Загрузка данных из открытых источников.
-	\item Фильтрация лишних изображений.
-	\item Сохранение файлов в единой директории с консистентным именем: \smallcode{image\_[number]\_[real\_age].jpg}
-	\item TO BE DONE
+	\item Конкатенация датасетов с консистентным именем файла: \smallcode{image\_[number]\_[real\_age].jpg}
+	\item Создание \smallcode{csv}-файла с метками для изображений.
+	\item Приведение изображений к единому размеру.
+	\item Разбиение на тестовую, валидационную и тестовые подвыборки.
 \end{enumerate}
+
+\subsection*{Загрузка данных из открытых источников}
+Для загрузки датасетов был реализовать скрипт на языке \smallcode{bash}. Исходный код скрипта приведен в \hyperref[lst:datasetinit]{Приложении А}.
+
+
+При успешном выполнении скрипта датасет из изображений представлен в предварительном формате:
+\begin{lstlisting}[caption={Иерархия файлов проекта}, label={lst:datasetinit},columns=fullflexible, keepspaces=true]
+...
+datasets/
+	UTKFace/		# Изображения (метки внутри названия файла)
+	appa/
+		*.csv 		# .csv файлы с метками
+		test/		# Изображения связаны с метко й через название файла
+		train/
+		val/
+\end{lstlisting}
+
+\subsection*{Конкатенация датасетов}
+Для конкатенации датасетов реализован скрипт на языке \smallcode{Python} \cite{cnn-age-recognize-concat-datasets}.
+
+
+Скрипт собирает изображения из скачанных датасетов в единую директорию. Имена файлов имеют консистентные названия:\\
+\smallcode{image\_[number]\_[real\_age].jpg}.
+
+\subsection*{Создание файла с метками}
+Для создания \smallcode{csv}-файла с метками объектов реализован скрипт на языке \smallcode{Python} \cite{cnn-age-recognize-csv}.
+
+
+В результате \smallcode{csv}-файл имеет следующий вид:
+\begin{lstlisting}[caption={\smallcode{csv}-файл с метками объектов}, label={lst:datasetinit},columns=fullflexible, keepspaces=true]
+,	image_name,				age
+0,	image_23162_25.jpg,		25
+1,	image_17662_78.jpg,		78
+2,	image_06600_32.jpg,		32
+\end{lstlisting}
+
+
+\subsection*{Нормализация размеров изображений}
+Для нормализации размеров изображений реализован скрипт на языке \smallcode{Python} \cite{cnn-age-recognize-resize}
+
+
+Скрипт наивно (обычное сжатие или растягивание) изменяет размер изображения до заданного значения. В данной работе все изображения нормализованы к размеру 224 на 224 пикселя.
+
+
+На \hyperref[fig:resize-example]{Рисунке \ref*{fig:resize-example}} приведен пример наивной нормализации изображения до заданного знчений.
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=1\linewidth]{../artifacts/resize_example.pdf}
+	\caption{Пример сжатия изображения из датасета APPA}
+	\label{fig:resize-example}
+\end{figure}
+
+\subsection*{Разделение датасета на подвыборки}
+Для разделения полученнго датасета на \smallcode{test, train, valid}-подвыборки был реализован скрипт на языке \smallcode{Python} \cite{cnn-age-recognize-splitter}
+
+
+Скрипт делит выборку целиком на $K$ квантилей и равномерно забирает данные для подвыборок в соотношении:
+\begin{itemize}
+	\item train: 70\%;
+	\item validation: 20\%;
+	\item test: 10\%;
+\end{itemize}
+
+
+В результате сбора и предварительной обработки данных был получен датасет размером 31299. Каждое изображение приведено к единому размеру 224 на 224 пикселя. Создан \smallcode{csv}-файл с метками для каждой фотографии лица.
